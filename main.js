@@ -4,20 +4,65 @@ const users = [
   { name: 'User2', color: '#F78E4F' }
 ];
 
-// 할 일 목록 불러오기 (localStorage)
-function loadTodos() {
-  const todos = localStorage.getItem('todos2users');
-  return todos ? JSON.parse(todos) : [];
+// 데이터베이스 파일 경로
+const DB_FILE = 'todos.json';
+
+// 상태 표시 업데이트
+function updateStatus(message) {
+  const statusEl = document.getElementById('status');
+  statusEl.textContent = message;
 }
 
-// 할 일 목록 저장 (localStorage)
-function saveTodos(todos) {
-  localStorage.setItem('todos2users', JSON.stringify(todos));
+// 할 일 목록 불러오기 (JSON 파일)
+async function loadTodos() {
+  try {
+    const response = await fetch(DB_FILE);
+    if (response.ok) {
+      const data = await response.json();
+      return data.todos || [];
+    }
+  } catch (error) {
+    console.log('데이터베이스 파일이 없습니다. 새로 생성합니다.');
+  }
+  return [];
+}
+
+// 할 일 목록 저장 (JSON 파일)
+async function saveTodos(todos) {
+  const data = {
+    lastUpdated: new Date().toISOString(),
+    todos: todos
+  };
+  
+  // 브라우저에서는 파일을 직접 저장할 수 없으므로
+  // localStorage에 임시 저장하고 다운로드 링크 제공
+  localStorage.setItem('todos2users_backup', JSON.stringify(data));
+  
+  // JSON 파일 다운로드 링크 생성
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = DB_FILE;
+  a.textContent = '데이터베이스 파일 다운로드';
+  a.style.display = 'block';
+  a.style.marginTop = '10px';
+  a.style.padding = '8px';
+  a.style.backgroundColor = '#4F8EF7';
+  a.style.color = 'white';
+  a.style.textDecoration = 'none';
+  a.style.borderRadius = '4px';
+  a.style.textAlign = 'center';
+  
+  const downloadSection = document.getElementById('download-section');
+  downloadSection.innerHTML = '';
+  downloadSection.appendChild(a);
+  
+  updateStatus(`저장됨 (${todos.length}개 항목) - 파일을 다운로드하고 GitHub에 업로드하세요`);
 }
 
 // 할 일 렌더링
-function renderTodos() {
-  const todos = loadTodos();
+function renderTodos(todos) {
   const list = document.getElementById('todo-list');
   list.innerHTML = '';
   todos.forEach((todo, idx) => {
@@ -36,10 +81,9 @@ function renderTodos() {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.checked = !!todo.checked[uidx];
-      checkbox.addEventListener('change', () => {
+      checkbox.addEventListener('change', async () => {
         todo.checked[uidx] = checkbox.checked;
-        saveTodos(todos);
-        renderTodos();
+        await saveTodos(todos);
       });
       label.appendChild(checkbox);
       label.appendChild(document.createTextNode(user.name));
@@ -55,10 +99,9 @@ function renderTodos() {
     const delBtn = document.createElement('button');
     delBtn.textContent = '삭제';
     delBtn.style.marginLeft = 'auto';
-    delBtn.onclick = () => {
+    delBtn.onclick = async () => {
       todos.splice(idx, 1);
-      saveTodos(todos);
-      renderTodos();
+      await saveTodos(todos);
     };
     li.appendChild(delBtn);
 
@@ -67,29 +110,49 @@ function renderTodos() {
 }
 
 // 할 일 추가
-function addTodo(text) {
-  const todos = loadTodos();
-  todos.push({ text, checked: [false, false] });
-  saveTodos(todos);
-  renderTodos();
+async function addTodo(text) {
+  const todos = await loadTodos();
+  todos.push({ 
+    text, 
+    checked: [false, false],
+    createdAt: new Date().toISOString()
+  });
+  await saveTodos(todos);
+  renderTodos(todos);
 }
 
 // 폼 이벤트 연결
 function setupForm() {
   const form = document.getElementById('todo-form');
-  form.onsubmit = (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const input = document.getElementById('todo-input');
     const value = input.value.trim();
     if (value) {
-      addTodo(value);
+      await addTodo(value);
       input.value = '';
     }
   };
 }
 
+// 새로고침 버튼 설정
+function setupRefreshButton() {
+  const refreshBtn = document.getElementById('refresh-btn');
+  refreshBtn.onclick = async () => {
+    updateStatus('데이터 새로고침 중...');
+    const todos = await loadTodos();
+    renderTodos(todos);
+    updateStatus(`로드됨 (${todos.length}개 항목)`);
+  };
+}
+
 // 초기화
-window.onload = function() {
+window.onload = async function() {
+  updateStatus('데이터 로드 중...');
   setupForm();
-  renderTodos();
+  setupRefreshButton();
+  
+  const todos = await loadTodos();
+  renderTodos(todos);
+  updateStatus(`로드됨 (${todos.length}개 항목)`);
 };
