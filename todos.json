@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-07-05T16:30:46.319Z",
+  "lastUpdated": "2025-07-05T22:48:42.412Z",
   "todos": [
     {
       "text": "모자",
@@ -16,6 +16,46 @@
         false
       ],
       "createdAt": "2025-07-05T16:30:46.319Z"
+    },
+    {
+      "text": "신분증",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T22:43:20.967Z"
+    },
+    {
+      "text": "수영복",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T22:43:22.999Z"
+    },
+    {
+      "text": "여벌옷",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T22:43:24.393Z"
+    },
+    {
+      "text": "방수팩/케이스",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T22:48:09.531Z"
+    },
+    {
+      "text": "스트랩or작은방수가방",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T22:48:42.412Z"
     }
   ]
 }
