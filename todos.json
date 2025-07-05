@@ -1,4 +1,21 @@
 {
-  "lastUpdated": "2024-01-01T00:00:00.000Z",
-  "todos": []
-} 
+  "lastUpdated": "2025-07-05T16:30:46.319Z",
+  "todos": [
+    {
+      "text": "모자",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T16:30:45.286Z"
+    },
+    {
+      "text": "샌들",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T16:30:46.319Z"
+    }
+  ]
+}
