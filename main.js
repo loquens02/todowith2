@@ -14,10 +14,10 @@ function updateStatus(message) {
 }
 
 // 할 일 목록 불러오기 (JSON 파일 + localStorage)
-async function loadTodos() {
-  // 먼저 localStorage에서 최신 데이터 확인
+async function loadTodos(forceFromFile = false) {
+  // forceFromFile이 true이거나 localStorage에 데이터가 없으면 파일에서 로드
   const localData = localStorage.getItem('todos2users_backup');
-  if (localData) {
+  if (!forceFromFile && localData) {
     try {
       const data = JSON.parse(localData);
       return data.todos || [];
@@ -26,7 +26,7 @@ async function loadTodos() {
     }
   }
   
-  // localStorage에 없으면 GitHub 파일에서 로드
+  // todos.json 파일에서 로드
   try {
     const response = await fetch(DB_FILE);
     if (response.ok) {
@@ -36,7 +36,7 @@ async function loadTodos() {
       return data.todos || [];
     }
   } catch (error) {
-    console.log('GitHub 파일 로드 실패, 빈 배열 반환:', error);
+    console.log('todos.json 파일 로드 실패, 빈 배열 반환:', error);
   }
   return [];
 }
@@ -149,16 +149,16 @@ function setupForm() {
   };
 }
 
-// 새로고침 버튼 설정
+// 초기화 버튼 설정
 function setupRefreshButton() {
   const refreshBtn = document.getElementById('refresh-btn');
   refreshBtn.onclick = async () => {
-    updateStatus('GitHub에서 최신 데이터 가져오는 중...');
-    // localStorage 초기화하여 GitHub 파일에서 새로 로드
+    updateStatus('todos.json 파일로 초기화 중...');
+    // localStorage 초기화 후 todos.json 파일에서 로드
     localStorage.removeItem('todos2users_backup');
-    const todos = await loadTodos();
+    const todos = await loadTodos(true);
     renderTodos(todos);
-    updateStatus(`GitHub에서 로드됨 (${todos.length}개 항목)`);
+    updateStatus(`초기화 완료 (${todos.length}개 항목)`);
   };
 }
 
