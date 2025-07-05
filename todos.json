@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-07-05T22:48:42.412Z",
+  "lastUpdated": "2025-07-05T23:15:40.168Z",
   "todos": [
     {
       "text": "모자",
@@ -56,6 +56,38 @@
         false
       ],
       "createdAt": "2025-07-05T22:48:42.412Z"
+    },
+    {
+      "text": "가벼운물총(+스트랩)",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T23:09:12.183Z"
+    },
+    {
+      "text": "입장전 식사",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T23:10:07.218Z"
+    },
+    {
+      "text": "(보관용)수건",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T23:14:30.304Z"
+    },
+    {
+      "text": "선크림/긴팔바람막이",
+      "checked": [
+        false,
+        false
+      ],
+      "createdAt": "2025-07-05T23:15:40.168Z"
     }
   ]
 }
