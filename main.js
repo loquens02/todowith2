@@ -13,16 +13,30 @@ function updateStatus(message) {
   statusEl.textContent = message;
 }
 
-// 할 일 목록 불러오기 (JSON 파일)
+// 할 일 목록 불러오기 (JSON 파일 + localStorage)
 async function loadTodos() {
+  // 먼저 localStorage에서 최신 데이터 확인
+  const localData = localStorage.getItem('todos2users_backup');
+  if (localData) {
+    try {
+      const data = JSON.parse(localData);
+      return data.todos || [];
+    } catch (error) {
+      console.log('localStorage 데이터 파싱 오류:', error);
+    }
+  }
+  
+  // localStorage에 없으면 GitHub 파일에서 로드
   try {
     const response = await fetch(DB_FILE);
     if (response.ok) {
       const data = await response.json();
+      // localStorage에도 저장
+      localStorage.setItem('todos2users_backup', JSON.stringify(data));
       return data.todos || [];
     }
   } catch (error) {
-    console.log('데이터베이스 파일이 없습니다. 새로 생성합니다.');
+    console.log('GitHub 파일 로드 실패, 빈 배열 반환:', error);
   }
   return [];
 }
@@ -139,10 +153,12 @@ function setupForm() {
 function setupRefreshButton() {
   const refreshBtn = document.getElementById('refresh-btn');
   refreshBtn.onclick = async () => {
-    updateStatus('데이터 새로고침 중...');
+    updateStatus('GitHub에서 최신 데이터 가져오는 중...');
+    // localStorage 초기화하여 GitHub 파일에서 새로 로드
+    localStorage.removeItem('todos2users_backup');
     const todos = await loadTodos();
     renderTodos(todos);
-    updateStatus(`로드됨 (${todos.length}개 항목)`);
+    updateStatus(`GitHub에서 로드됨 (${todos.length}개 항목)`);
   };
 }
 
